@@ -66,6 +66,8 @@ class ClientProgram{
     
     private static String osName=System.getProperty("os.name");
     
+    private static String jobType = new String();
+    
     
     public static String runCommand(String command) {
     	
@@ -155,67 +157,61 @@ class ClientProgram{
 			            
 			            
 			            
-			            String[] managerAndJobName = text.split("[|]");
+			            String[] managerAndJobNameAndType = text.split("[|]");
 			            
+			            System.out.println("texttexttext:"+text);
 			            
-			            
-			            managerName=managerAndJobName[0];
-			            jobName=managerAndJobName[1];
+			            managerName=managerAndJobNameAndType[0];
+			            jobName=managerAndJobNameAndType[1];
+			            jobType=managerAndJobNameAndType[2];
 
 			            System.out.println("Manager name:"+ managerName);
 
 			            System.out.println("Job name:"+ jobName);
 
-			            
-			            
-				    	initClientPath();
-				    	
-				  
-				    		
+			            System.out.println("Job type:"+ jobType);
 
-						
+						//default for all jobs
+				    	initClientPath();
 						initManagerPath();
 						initQueuePath();
-						
-
 						initJobPath();
-						initCommandFilePath();
-						initParametersList();			
-						initCommand();
-						initDoneJobPath();
-						runCommand(command);
-						
-						createOutputFolder();
-						writeOutputToFile();
-						
-						moveJobFromQueueToDoneFolder();
-
-						System.out.println("COMMAND:"+command);
-						System.out.println("OUTPUT:"+output);
-			            //writer.println("output:" + output);
-			            System.out.println("Job name:"+ jobName);
-
-						writer.println("output:" + doneJobPath);
-
-						System.out.println();
-
-						destructStrings2();
-
-						
-						destructStrings();
 						
 						
+						if(jobType.equals("Executable")) {
+							//specific for Executable job
+							initCommandFilePath();
+							initParametersList();			
+							initCommand();
+							initDoneJobPath();
+							runCommand(command);
+							
+							createOutputFolder();
+							writeOutputToFile();
+							
+							moveJobFromQueueToDoneFolder();
 
+							System.out.println("COMMAND:"+command);
+							System.out.println("OUTPUT:"+output);
+				            //writer.println("output:" + output);
+				            System.out.println("Job name:"+ jobName);
 
-			    	
-			        
-			            
-			            
-			            
-			            
-			            
-			            
-			            //run the job
+							writer.println("output:" + doneJobPath);
+
+							System.out.println();
+
+							destructStrings2();
+
+							
+							destructStrings();
+							
+						}
+						else if(jobType.equals("Archiver")) {
+							//specific for Archiver job
+							writer.println("output:" + "archiverrr");
+
+						}
+
 			            
 			            
 		           
