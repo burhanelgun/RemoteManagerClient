@@ -83,7 +83,7 @@ class ClientProgram{
 
     private static String outputZipFile;
 
-    
+    private static String[] managerAndJobNameAndType;
     
     
     
@@ -136,7 +136,15 @@ class ClientProgram{
 		
 		baseStoragePath=args[1];
 		
-		
+		baseStoragePath=baseStoragePath.replace("/", "\\");
+		baseStoragePath=baseStoragePath.replace("//", "\\");
+		baseStoragePath=baseStoragePath.replace("\\\\", "\\");
+		baseStoragePath=baseStoragePath.replace("\\\\\\", "\\");
+		baseStoragePath=baseStoragePath.replace("/", "\\");
+		baseStoragePath=baseStoragePath.replace("//", "\\");
+        
+		baseStoragePath = "\\"+baseStoragePath;
+
 		
 		
 		
@@ -179,7 +187,7 @@ class ClientProgram{
 			            
 			            
 			            
-			            String[] managerAndJobNameAndType = text.split("[|]");
+			            managerAndJobNameAndType = text.split("[|]");
 			            
 			            System.out.println("texttexttext:"+text);
 			            
@@ -218,47 +226,62 @@ class ClientProgram{
 				            //writer.println("output:" + output);
 				            System.out.println("Job name:"+ jobName);
 
-							writer.println("output:" + doneJobPath);
+				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+				            
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            messageString=messageString.replace("\\\\", "\\");
+				            messageString=messageString.replace("\\\\\\", "\\");
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            
+				            
+							writer.println(messageString);
 
-							System.out.println();
 
-							destructStrings2();
 
 							
-							destructStrings();
 							
 						}
 						else if(jobType.equals("Archiver")) {
 							//specific for Archiver job
 							
-							
-				            folderNameToMakeArchive=managerAndJobNameAndType[3];
-				            folderPathToMakeArchive= jobPath+"/"+folderNameToMakeArchive;
+							initFolderNameToMakeArchive();
+							initFolderPathToMakeArchive();
 				            
 							initDoneJobPath();
 				            createOutputFolder();
-				            outputZipFile=outputFolderPath+"/"+folderNameToMakeArchive+".zip";
+				            
+				            initOutputZipFile();
 
-				            generateFileList(new File(folderPathToMakeArchive));
-				            zipIt(outputZipFile);
+				            zipTheFolder();
 				            
 				            moveJobFromQueueToDoneFolder();
 				            
-							System.out.println("jobPath="+jobPath);
-							System.out.println("folderPathToMakeArchive="+folderPathToMakeArchive);
-							System.out.println("folderNameToMakeArchive="+folderNameToMakeArchive);
+				            
+				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
 
-							writer.println("output:" + "archiverrr");
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            messageString=messageString.replace("\\\\", "\\");
+				            messageString=messageString.replace("\\\\\\", "\\");
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            messageString = "\\"+messageString;
+
+
+							writer.println(messageString);
 							
-							destructStrings2();
 
 							archiverFileList.clear();
 							
-							destructStrings();
 
 						}
 
-			            
+						destructStrings();
+
+						destructStrings2();
+
 			            
 		           
 	 
@@ -286,6 +309,20 @@ class ClientProgram{
 	
     
 
+	private static void zipTheFolder() {
+        generateFileList(new File(folderPathToMakeArchive));
+        zipIt(outputZipFile);		
+	}
+	private static void initOutputZipFile() {
+        outputZipFile=outputFolderPath+"/"+folderNameToMakeArchive+".zip";		
+	}
+	private static void initFolderPathToMakeArchive() {
+        folderPathToMakeArchive= jobPath+"/"+folderNameToMakeArchive;		
+	}
+	private static void initFolderNameToMakeArchive() {
+        folderNameToMakeArchive=managerAndJobNameAndType[3];
+		
+	}
 	private static void initOutputFilePath() {
 		outputFilePath=jobPath+"/"+outputFolderName+"/"+outputFileName;
 	}
