@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 class ClientProgram{
 	
@@ -67,6 +72,19 @@ class ClientProgram{
     private static String osName=System.getProperty("os.name");
     
     private static String jobType = new String();
+    
+    
+    
+    //for Archivable job types
+    private static String folderPathToMakeArchive;
+    private static String folderNameToMakeArchive;
+
+    private static List <String> archiverFileList=new ArrayList < String > ();
+
+    private static String outputZipFile;
+
+    
+    
     
     
     public static String runCommand(String command) {
@@ -148,6 +166,10 @@ class ClientProgram{
 		        while(true) {
 		        	 text = reader.readLine();
 			            
+		        	 
+		        	 //Sample text request from Server for Archiver Job = "Manager-burhan|Job-teneme|Archiver|maindir1"
+		        	 //Sample text request from Server for Executable Job = "Manager-burhan|Job-ghhghj|Executable"
+		        	 System.out.println("TEXT:"+text);
 			            
 			            
 			            if(text.equals("bye")) {
@@ -208,7 +230,31 @@ class ClientProgram{
 						}
 						else if(jobType.equals("Archiver")) {
 							//specific for Archiver job
+							
+							
+				            folderNameToMakeArchive=managerAndJobNameAndType[3];
+				            folderPathToMakeArchive= jobPath+"/"+folderNameToMakeArchive;
+				            
+							initDoneJobPath();
+				            createOutputFolder();
+				            outputZipFile=outputFolderPath+"/"+folderNameToMakeArchive+".zip";
+
+				            generateFileList(new File(folderPathToMakeArchive));
+				            zipIt(outputZipFile);
+				            
+				            moveJobFromQueueToDoneFolder();
+				            
+							System.out.println("jobPath="+jobPath);
+							System.out.println("folderPathToMakeArchive="+folderPathToMakeArchive);
+							System.out.println("folderNameToMakeArchive="+folderNameToMakeArchive);
+
 							writer.println("output:" + "archiverrr");
+							
+							destructStrings2();
+
+							archiverFileList.clear();
+							
+							destructStrings();
 
 						}
 
@@ -245,10 +291,10 @@ class ClientProgram{
 	}
 	private static void initOutputFolderPath() {
 		outputFolderPath=jobPath+"/"+outputFolderName;
+		initOutputFilePath();
 	}
 	private static void createOutputFolder() {
-		initOutputFolderPath();			
-		initOutputFilePath();	
+		initOutputFolderPath();				
 		new File(outputFolderPath).mkdirs();
 		
 	}
@@ -371,6 +417,76 @@ class ClientProgram{
 			e.printStackTrace();
 		}
     	return true;
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+    public static void zipIt(String zipFile) {
+        byte[] buffer = new byte[1024];
+        String source = new File(folderPathToMakeArchive).getName();
+        FileOutputStream fos = null;
+        ZipOutputStream zos = null;
+        try {
+            fos = new FileOutputStream(zipFile);
+            zos = new ZipOutputStream(fos);
+
+            System.out.println("Output to Zip : " + zipFile);
+            FileInputStream in = null;
+
+            for (String file: archiverFileList) {
+                System.out.println("File Added : " + file);
+                ZipEntry ze = new ZipEntry(source + File.separator + file);
+                zos.putNextEntry(ze);
+                try {
+                    in = new FileInputStream(folderPathToMakeArchive + File.separator + file);
+                    int len;
+                    while ((len = in .read(buffer)) > 0) {
+                        zos.write(buffer, 0, len);
+                    }
+                } finally {
+                    in.close();
+                }
+            }
+
+            zos.closeEntry();
+            
+            System.out.println("Folder successfully compressed");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                zos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void generateFileList(File node) {
+        // add file only
+        if (node.isFile()) {
+        	archiverFileList.add(generateZipEntry(node.toString()));
+        }
+
+        if (node.isDirectory()) {
+            String[] subNote = node.list();
+            for (String filename: subNote) {
+                generateFileList(new File(node, filename));
+            }
+        }
+    }
+
+    private static String generateZipEntry(String file) {
+        return file.substring(folderPathToMakeArchive.length() + 1, file.length());
     }
 
 }
