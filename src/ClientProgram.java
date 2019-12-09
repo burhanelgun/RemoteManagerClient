@@ -189,7 +189,7 @@ class ClientProgram{
 						initJobPath();
 						
 						
-						if(jobType.equals("Executable")) {
+						if(jobType.equals("Run Executable")) {
 							//specific for Executable job
 							initCommandFilePath();
 							initParametersList();			
@@ -224,7 +224,7 @@ class ClientProgram{
 							
 							
 						}
-						else if(jobType.equals("Archiver")) {
+						else if(jobType.equals("Make Archive")) {
 							//specific for Archiver job
 							
 							initFolderNameToMakeArchive();
