@@ -57,7 +57,6 @@ class ClientProgram{
     private static String command = new String();
     
     private static String baseStoragePath;
-    private static String baseClientDirName = "\\Client";
     private static String commandFileName = "command.txt";
     private static String parametersFileName = "parameters.txt";
     private static StringBuffer output = new StringBuffer();
@@ -83,14 +82,14 @@ class ClientProgram{
 
     private static String outputZipFile;
 
-    private static String[] managerAndJobNameAndType;
+    private static String[] basePathclientManagerJobNameAndType;
     
     
     
     public static String runCommand(String command) {
     	
 		//And don't forget, if you are running in Windows, you need to put "cmd /c " in front of your command.
-    	Process p;
+    	final Process p;
 		try {
 			p = Runtime.getRuntime().exec(command);
 		
@@ -131,26 +130,6 @@ class ClientProgram{
     	
     }
     public static void main(String[] args) throws InterruptedException{
-    	
-    	clientNum=args[0];
-		
-		baseStoragePath=args[1];
-		
-		baseStoragePath=baseStoragePath.replace("/", "\\");
-		baseStoragePath=baseStoragePath.replace("//", "\\");
-		baseStoragePath=baseStoragePath.replace("\\\\", "\\");
-		baseStoragePath=baseStoragePath.replace("\\\\\\", "\\");
-		baseStoragePath=baseStoragePath.replace("/", "\\");
-		baseStoragePath=baseStoragePath.replace("//", "\\");
-        
-		baseStoragePath = "\\"+baseStoragePath;
-
-		
-		
-		
-		
-		
-		
 
 		int port = Integer.parseInt("8888");
  
@@ -187,13 +166,15 @@ class ClientProgram{
 			            
 			            
 			            
-			            managerAndJobNameAndType = text.split("[|]");
+			            basePathclientManagerJobNameAndType = text.split("[|]");
 			            
 			            System.out.println("texttexttext:"+text);
 			            
-			            managerName=managerAndJobNameAndType[0];
-			            jobName=managerAndJobNameAndType[1];
-			            jobType=managerAndJobNameAndType[2];
+			            baseStoragePath=basePathclientManagerJobNameAndType[0];
+			            clientNum=basePathclientManagerJobNameAndType[1];
+			            managerName=basePathclientManagerJobNameAndType[2];
+			            jobName=basePathclientManagerJobNameAndType[3];
+			            jobType=basePathclientManagerJobNameAndType[4];
 
 			            System.out.println("Manager name:"+ managerName);
 
@@ -248,7 +229,10 @@ class ClientProgram{
 							
 							initFolderNameToMakeArchive();
 							initFolderPathToMakeArchive();
-				            
+							
+							System.out.println("FolderNameToMakeArchive:"+folderNameToMakeArchive);
+							System.out.println("FolderPathToMakeArchive:"+folderPathToMakeArchive);
+
 							initDoneJobPath();
 				            createOutputFolder();
 				            
@@ -310,7 +294,9 @@ class ClientProgram{
     
 
 	private static void zipTheFolder() {
+		
         generateFileList(new File(folderPathToMakeArchive));
+        System.out.println("archiverFileList:"+archiverFileList);
         zipIt(outputZipFile);		
 	}
 	private static void initOutputZipFile() {
@@ -320,7 +306,7 @@ class ClientProgram{
         folderPathToMakeArchive= jobPath+"/"+folderNameToMakeArchive;		
 	}
 	private static void initFolderNameToMakeArchive() {
-        folderNameToMakeArchive=managerAndJobNameAndType[3];
+        folderNameToMakeArchive=basePathclientManagerJobNameAndType[5];
 		
 	}
 	private static void initOutputFilePath() {
@@ -349,7 +335,7 @@ class ClientProgram{
 		managerList = new ArrayList<File>(Arrays.asList(clientPathFolder.listFiles()));		
 	}
 	private static void initClientPath() {
-    	clientPath=baseStoragePath+baseClientDirName+clientNum;		
+    	clientPath=baseStoragePath+clientNum;		
     	clientPathFolder= new File(clientPath);
 	}
 	private static void destructStrings() {
@@ -483,6 +469,7 @@ class ClientProgram{
                 ZipEntry ze = new ZipEntry(source + File.separator + file);
                 zos.putNextEntry(ze);
                 try {
+                	System.out.println("folderPathToMakeArchive::"+folderPathToMakeArchive);
                     in = new FileInputStream(folderPathToMakeArchive + File.separator + file);
                     int len;
                     while ((len = in .read(buffer)) > 0) {
@@ -523,7 +510,8 @@ class ClientProgram{
     }
 
     private static String generateZipEntry(String file) {
-        return file.substring(folderPathToMakeArchive.length() + 1, file.length());
+    	//important
+        return file.substring(folderPathToMakeArchive.length()-1, file.length());
     }
 
 }
