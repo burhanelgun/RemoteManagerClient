@@ -156,7 +156,7 @@ class ClientProgram{
 		        	 
 		        	 //Sample text request from Server for Archiver Job = "Manager-burhan|Job-teneme|Archiver|maindir1"
 		        	 //Sample text request from Server for Executable Job = "Manager-burhan|Job-ghhghj|Executable"
-		        	 System.out.println("TEXT:"+text);
+		        	 //**System.out.println("TEXT:"+text);
 			            
 			            
 			            if(text.equals("bye")) {
@@ -168,7 +168,7 @@ class ClientProgram{
 			            
 			            basePathclientManagerJobNameAndType = text.split("[|]");
 			            
-			            System.out.println("texttexttext:"+text);
+			            //**System.out.println("texttexttext:"+text);
 			            
 			            baseStoragePath=basePathclientManagerJobNameAndType[0];
 			            clientNum=basePathclientManagerJobNameAndType[1];
@@ -205,7 +205,7 @@ class ClientProgram{
 							System.out.println("COMMAND:"+command);
 							System.out.println("OUTPUT:"+output);
 				            //writer.println("output:" + output);
-				            System.out.println("Job name:"+ jobName);
+				            //System.out.println("Job name:"+ jobName);
 
 				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
 				            
@@ -296,7 +296,7 @@ class ClientProgram{
 	private static void zipTheFolder() {
 		
         generateFileList(new File(folderPathToMakeArchive));
-        System.out.println("archiverFileList:"+archiverFileList);
+        //**System.out.println("archiverFileList:"+archiverFileList);
         zipIt(outputZipFile);		
 	}
 	private static void initOutputZipFile() {
@@ -327,11 +327,11 @@ class ClientProgram{
 		out.close();
 	}
 	private static void initJobList() {
-		System.out.println("queuePathFolder:"+queuePathFolder);
+		//**System.out.println("queuePathFolder:"+queuePathFolder);
    		jobList = new ArrayList<File>(Arrays.asList(queuePathFolder.listFiles()));		
 	}
 	private static void initManagerList() {
-		System.out.println("clientPathFolder:"+clientPathFolder);
+		//**System.out.println("clientPathFolder:"+clientPathFolder);
 		managerList = new ArrayList<File>(Arrays.asList(clientPathFolder.listFiles()));		
 	}
 	private static void initClientPath() {
@@ -469,7 +469,7 @@ class ClientProgram{
                 ZipEntry ze = new ZipEntry(source + File.separator + file);
                 zos.putNextEntry(ze);
                 try {
-                	System.out.println("folderPathToMakeArchive::"+folderPathToMakeArchive);
+                	//**System.out.println("folderPathToMakeArchive::"+folderPathToMakeArchive);
                     in = new FileInputStream(folderPathToMakeArchive + File.separator + file);
                     int len;
                     while ((len = in .read(buffer)) > 0) {
