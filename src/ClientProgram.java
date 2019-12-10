@@ -168,7 +168,7 @@ class ClientProgram{
 			            
 			            basePathclientManagerJobNameAndType = text.split("[|]");
 			            
-			            //**System.out.println("texttexttext:"+text);
+			            //System.out.println("texttexttext:"+text);
 			            
 			            baseStoragePath=basePathclientManagerJobNameAndType[0];
 			            clientNum=basePathclientManagerJobNameAndType[1];
@@ -189,7 +189,7 @@ class ClientProgram{
 						initJobPath();
 						
 						
-						if(jobType.equals("Run Executable")) {
+						if(jobType.equals("Run Single Executable")) {
 							//specific for Executable job
 							initCommandFilePath();
 							initParametersList();			
@@ -261,6 +261,75 @@ class ClientProgram{
 							
 
 						}
+						else if(jobType.equals("Run Executable With Different Parameters")) {
+							//specific for Archiver job
+
+
+							
+							
+							//initParametersList();	
+							String[] parametersArray = basePathclientManagerJobNameAndType[6].split(",");
+							parametersList=new ArrayList<String>();
+							for (int i = 0; i < parametersArray.length; i++) {
+
+								parametersList.add(parametersArray[i]);
+							}
+							
+							
+							//initCommandFilePath();
+							command=basePathclientManagerJobNameAndType[5];
+
+							
+							//initCommand();
+							//initExecutableFileName();
+							executableFileName=basePathclientManagerJobNameAndType[7];
+							initExecutableFilePath();
+							command+=" ";
+							command+=executableFilePath;
+							
+							for(int k=0;k<parametersList.size();k++) {
+								command = command+ " "+parametersList.get(k);
+							}
+							
+							
+							
+							
+							
+							initDoneJobPath();
+							runCommand(command);
+							
+							createOutputFolder();
+							writeOutputToFile();
+							
+							moveJobFromQueueToDoneFolder();
+
+							System.out.println("COMMAND:"+command);
+							System.out.println("OUTPUT:"+output);
+				            //writer.println("output:" + output);
+				            //System.out.println("Job name:"+ jobName);
+
+				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+				            
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            messageString=messageString.replace("\\\\", "\\");
+				            messageString=messageString.replace("\\\\\\", "\\");
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            
+				            
+							writer.println(messageString);
+
+							
+
+						}
+						
+						
+						
+						
+						
+						
+						
 
 						destructStrings();
 
