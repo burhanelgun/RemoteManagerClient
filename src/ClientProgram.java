@@ -168,9 +168,22 @@ class ClientProgram{
 			            
 			            basePathclientManagerJobNameAndType = text.split("[|]");
 			            
-			            //System.out.println("texttexttext:"+text);
-			            
-			            baseStoragePath=basePathclientManagerJobNameAndType[0];
+				   
+
+					    if(osName.charAt(0)=='W') {
+					    	//windows
+				            System.out.println("windows");
+				            baseStoragePath=basePathclientManagerJobNameAndType[0];
+					    }
+					    else {
+					    	//linux
+				            System.out.println("linux");
+					    	//baseStoragePath="/mnt/cloudStorage/";
+					    	baseStoragePath=basePathclientManagerJobNameAndType[0];
+					    	baseStoragePath=baseStoragePath.replace("\\", "//");
+
+					    }
+					    
 			            clientNum=basePathclientManagerJobNameAndType[1];
 			            managerName=basePathclientManagerJobNameAndType[2];
 			            jobName=basePathclientManagerJobNameAndType[3];
@@ -217,7 +230,10 @@ class ClientProgram{
 				            messageString=messageString.replace("//", "\\");
 				            
 				            
+				            
+				            System.out.println("messageString----:"+ messageString);
 							writer.println(messageString);
+				            System.out.println("messageString++++:"+ messageString);
 
 
 
@@ -317,7 +333,7 @@ class ClientProgram{
 				            messageString=messageString.replace("/", "\\");
 				            messageString=messageString.replace("//", "\\");
 				            
-				            
+
 							writer.println(messageString);
 
 							
@@ -580,7 +596,17 @@ class ClientProgram{
 
     private static String generateZipEntry(String file) {
     	//important
-        return file.substring(folderPathToMakeArchive.length()-1, file.length());
+	    if(osName.charAt(0)=='W') {
+	    	//windows
+	        return file.substring(folderPathToMakeArchive.length()-1, file.length());
+
+	    }
+	    else {
+	    	//linux
+            return file.substring(folderPathToMakeArchive.length()-4, file.length());
+
+
+	    }
     }
 
 }
