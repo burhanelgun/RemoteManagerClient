@@ -213,7 +213,7 @@ class ClientProgram{
 							createOutputFolder();
 							writeOutputToFile();
 							
-							moveJobFromQueueToDoneFolder();
+							//--moveJobFromQueueToDoneFolder();
 
 							System.out.println("COMMAND:"+command);
 							System.out.println("OUTPUT:"+output);
@@ -456,8 +456,8 @@ class ClientProgram{
 	
 }
 	private static void initDoneJobPath() {
-    	doneJobPath=managerPath+"done/"+jobName;
-		
+    	doneJobPath=managerPath+jobName;
+    	//--doneJobPath=managerPath+"done/"+jobName;
 	}
 	private static void initCommand() throws IOException {
 		initFirstCommand();
@@ -504,7 +504,7 @@ class ClientProgram{
 	}
 	private static void initQueuePath() {
     	queuePath+=managerPath;
-		queuePath+="queue/";		
+		//---queuePath+="queue/";		
 		queuePathFolder = new File(queuePath);
 
 	}
