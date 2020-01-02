@@ -29,6 +29,7 @@ class ClientProgram{
     
     private static String managerPath = new String();
     private static String commandFilePath = new String();
+    private static String pythonScriptFilePath = new String();
     private static String parametersFilePath = new String();
     private static String jobPath = new String();
     private static String managerName = new String();
@@ -40,7 +41,6 @@ class ClientProgram{
     private static String executableFileName= new String();
     private static File queuePathFolder;
 
-    
     private static String executableFilePath= new String();
     
     private static String doneJobPath = new String();
@@ -58,6 +58,7 @@ class ClientProgram{
     
     private static String baseStoragePath;
     private static String commandFileName = "command.txt";
+    private static String pythonScriptFileName = "starter.py";
     private static String parametersFileName = "parameters.txt";
     private static StringBuffer output = new StringBuffer();
     
@@ -84,10 +85,37 @@ class ClientProgram{
 
     private static String[] basePathclientManagerJobNameAndType;
     
-    
+    public static String runCommand2(String command ) {
+    	Process p = null;
+		try {
+			p = Runtime.getRuntime().exec(command);
+	    	p.waitFor();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+    	String line = "", output = "";
+    	StringBuilder sb = new StringBuilder();
+
+    	BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    	try {
+			while ((line = br.readLine())!= null) {sb = sb.append(line).append("\n"); }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+    	output = sb.toString();
+    	return output;
+    }
     
     public static String runCommand(String command) {
-    	
+    	System.out.println("Command:"+command);
 		//And don't forget, if you are running in Windows, you need to put "cmd /c " in front of your command.
     	final Process p;
 		try {
@@ -228,17 +256,10 @@ class ClientProgram{
 				            messageString=messageString.replace("\\\\\\", "\\");
 				            messageString=messageString.replace("/", "\\");
 				            messageString=messageString.replace("//", "\\");
-				            
-				            
-				            
+
 				            System.out.println("messageString----:"+ messageString);
 							writer.println(messageString);
 				            System.out.println("messageString++++:"+ messageString);
-
-
-
-							
-							
 						}
 						else if(jobType.equals("Make Archive")) {
 							//specific for Archiver job
@@ -339,45 +360,78 @@ class ClientProgram{
 							
 
 						}
-						
-						
-						
-						
-						
-						
-						
+						else if(jobType.equals("Single Job")) {
+							System.out.println("1111111");
 
+							//specific for Executable job
+							initPythonScriptFilePath();
+							System.out.println("2222222");
+
+							initParametersList();
+							System.out.println("3333333");
+
+							initPythonScriptCommand();
+							System.out.println("4444444");
+
+							initDoneJobPath();
+							System.out.println("5555555");
+
+							runCommand(command);
+							System.out.println("6666666");
+
+							createOutputFolder();
+							writeOutputToFile();
+							
+							//--moveJobFromQueueToDoneFolder();
+
+							System.out.println("COMMAND:"+command);
+							System.out.println("OUTPUT:"+output);
+				            //writer.println("output:" + output);
+				            //System.out.println("Job name:"+ jobName);
+
+				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+				            
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            messageString=messageString.replace("\\\\", "\\");
+				            messageString=messageString.replace("\\\\\\", "\\");
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+
+				            System.out.println("messageString----:"+ messageString);
+							writer.println(messageString);
+				            System.out.println("messageString++++:"+ messageString);
+						}
 						destructStrings();
-
 						destructStrings2();
-
-			            
-		           
-	 
 		        }
-
-		           
-		        
- 
 		    }
- 
 		} catch (IOException ex) {
 		    System.out.println("Server exception: " + ex.getMessage());
 		    ex.printStackTrace();
 		}
-
-    	
     }
     
+	private static void initPythonScriptCommand() throws IOException {
+    	firstCommand="python";
+		executableFileName=pythonScriptFileName;
+		executableFilePath=jobPath+"/"+executableFileName;		
+		command+=firstCommand;
+		command+=" ";
+		command+=executableFilePath;
+		
+		for(int k=0;k<parametersList.size();k++) {
+			command = command+" "+parametersList.get(k);
+		}		
+	}
+	private static void initPythonScriptFilePath() {
+		pythonScriptFilePath=jobPath;
+		pythonScriptFilePath+="/";
+		pythonScriptFilePath+=pythonScriptFileName;	
 
-	    	
-	    	
-	    	
-	    	
-	    	
+	}
 	
-    
-
+	
 	private static void zipTheFolder() {
 		
         generateFileList(new File(folderPathToMakeArchive));
@@ -457,7 +511,6 @@ class ClientProgram{
 }
 	private static void initDoneJobPath() {
     	doneJobPath=managerPath+jobName;
-    	//--doneJobPath=managerPath+"done/"+jobName;
 	}
 	private static void initCommand() throws IOException {
 		initFirstCommand();
