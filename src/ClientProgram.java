@@ -74,6 +74,9 @@ class ClientProgram{
     private static String jobType = new String();
     
     
+    private static String inputFileName = new String();
+    
+    
     
     //for Archivable job types
     private static String folderPathToMakeArchive;
@@ -361,43 +364,75 @@ class ClientProgram{
 
 						}
 						else if(jobType.equals("Single Job")) {
-							System.out.println("1111111");
 
 							//specific for Executable job
 							initPythonScriptFilePath();
-							System.out.println("2222222");
-
 							initParametersList();
-							System.out.println("3333333");
-
 							initPythonScriptCommand();
-							System.out.println("4444444");
-
 							initDoneJobPath();
-							System.out.println("5555555");
-
 							runCommand(command);
-							System.out.println("6666666");
-
 							createOutputFolder();
 							writeOutputToFile();
-							
-							//--moveJobFromQueueToDoneFolder();
-
 							System.out.println("COMMAND:"+command);
 							System.out.println("OUTPUT:"+output);
-				            //writer.println("output:" + output);
-				            //System.out.println("Job name:"+ jobName);
-
 				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
-				            
 				            messageString=messageString.replace("/", "\\");
 				            messageString=messageString.replace("//", "\\");
 				            messageString=messageString.replace("\\\\", "\\");
 				            messageString=messageString.replace("\\\\\\", "\\");
 				            messageString=messageString.replace("/", "\\");
 				            messageString=messageString.replace("//", "\\");
+				            System.out.println("messageString----:"+ messageString);
+							writer.println(messageString);
+				            System.out.println("messageString++++:"+ messageString);
+						}
+						else if(jobType.equals("Different Parameters")) {
+							System.out.println("differ param");
+							String[] parametersArray = basePathclientManagerJobNameAndType[5].split(",");
+							parametersList=new ArrayList<String>();
+							for (int i = 0; i < parametersArray.length; i++) {
 
+								parametersList.add(parametersArray[i]);
+							}
+							//specific for Executable job
+							initPythonScriptFilePath();
+							initPythonScriptCommand();
+							initDoneJobPath();
+							runCommand(command);
+							createOutputFolder();
+							writeOutputToFile();
+							System.out.println("COMMAND:"+command);
+							System.out.println("OUTPUT:"+output);
+				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            messageString=messageString.replace("\\\\", "\\");
+				            messageString=messageString.replace("\\\\\\", "\\");
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            System.out.println("messageString----:"+ messageString);
+							writer.println(messageString);
+				            System.out.println("messageString++++:"+ messageString);
+						}
+						else if(jobType.equals("Different Input Files")) {
+							System.out.println("differ inputs");
+							//specific for Executable job
+							initPythonScriptFilePath();
+							initParametersList();
+							initPythonScriptCommand();
+							initDoneJobPath();
+							runCommand(command);
+							createOutputFolder();
+							writeOutputToFile();
+							System.out.println("COMMAND:"+command);
+							System.out.println("OUTPUT:"+output);
+				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
+				            messageString=messageString.replace("\\\\", "\\");
+				            messageString=messageString.replace("\\\\\\", "\\");
+				            messageString=messageString.replace("/", "\\");
+				            messageString=messageString.replace("//", "\\");
 				            System.out.println("messageString----:"+ messageString);
 							writer.println(messageString);
 				            System.out.println("messageString++++:"+ messageString);
@@ -530,6 +565,9 @@ class ClientProgram{
 	}
 	private static void initExecutableFilePath() {
 		executableFilePath=jobPath+"/"+executableFileName;		
+	}
+	private static void initInputFilePath() {
+		executableFilePath=jobPath+"/"+inputFileName;		
 	}
 	private static void initExecutableFileName() {
 		executableFileName=baseCommand.get(1);
