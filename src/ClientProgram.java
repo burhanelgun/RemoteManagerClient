@@ -76,7 +76,8 @@ class ClientProgram{
     
     private static String inputFileName = new String();
     
-    
+	private static int cores = Runtime.getRuntime().availableProcessors();
+	private static PrintWriter writer;
     
     //for Archivable job types
     private static String folderPathToMakeArchive;
@@ -117,7 +118,7 @@ class ClientProgram{
     	return output;
     }
     
-    public static String runCommand(String command) {
+    public static String runCommand(String command, String jobType) {
     	System.out.println("Command:"+command);
 		//And don't forget, if you are running in Windows, you need to put "cmd /c " in front of your command.
     	final Process p;
@@ -132,22 +133,183 @@ class ClientProgram{
 			     try {
 			        while ((line = input.readLine()) != null) {
 			        	output.append(line);
-
 			        }
-			     } catch (IOException e) {
+			        
+		        	if(jobType.equals("Run Single Executable")) {
+
+						
+						createOutputFolder();
+						writeOutputToFile();
+						
+						//--moveJobFromQueueToDoneFolder();
+
+						System.out.println("COMMAND:"+command);
+						System.out.println("OUTPUT:"+output);
+			            //writer.println("output:" + output);
+			            //System.out.println("Job name:"+ jobName);
+
+			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+			            
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            messageString=messageString.replace("\\\\", "\\");
+			            messageString=messageString.replace("\\\\\\", "\\");
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+
+			            System.out.println("messageString----:"+ messageString);
+						writer.println(messageString);
+			            System.out.println("messageString++++:"+ messageString);
+						destructStrings();
+						destructStrings2();
+					}
+					else if(jobType.equals("Make Archive")) {
+						//specific for Archiver job
+						
+						initFolderNameToMakeArchive();
+						initFolderPathToMakeArchive();
+						
+						System.out.println("FolderNameToMakeArchive:"+folderNameToMakeArchive);
+						System.out.println("FolderPathToMakeArchive:"+folderPathToMakeArchive);
+
+						initDoneJobPath();
+			            createOutputFolder();
+			            
+			            initOutputZipFile();
+
+			            zipTheFolder();
+			            
+			            moveJobFromQueueToDoneFolder();
+			            
+			            
+			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            messageString=messageString.replace("\\\\", "\\");
+			            messageString=messageString.replace("\\\\\\", "\\");
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            messageString = "\\"+messageString;
+
+
+						writer.println(messageString);
+						
+
+						archiverFileList.clear();
+						destructStrings();
+						destructStrings2();
+
+					}
+					else if(jobType.equals("Run Executable With Different Parameters")) {
+						//specific for Archiver job
+
+						createOutputFolder();
+						writeOutputToFile();
+						
+						moveJobFromQueueToDoneFolder();
+
+						System.out.println("COMMAND:"+command);
+						System.out.println("OUTPUT:"+output);
+			            //writer.println("output:" + output);
+			            //System.out.println("Job name:"+ jobName);
+
+			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+			            
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            messageString=messageString.replace("\\\\", "\\");
+			            messageString=messageString.replace("\\\\\\", "\\");
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            
+
+						writer.println(messageString);
+						destructStrings();
+						destructStrings2();
+						
+
+					}
+					else if(jobType.equals("Single Job")) {
+
+	
+						createOutputFolder();
+						writeOutputToFile();
+						System.out.println("COMMAND:"+command);
+						System.out.println("OUTPUT:"+output);
+			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            messageString=messageString.replace("\\\\", "\\");
+			            messageString=messageString.replace("\\\\\\", "\\");
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            System.out.println("messageString----:"+ messageString);
+						writer.println(messageString);
+			            System.out.println("messageString++++:"+ messageString);
+						destructStrings();
+						destructStrings2();
+					}
+					else if(jobType.equals("Different Parameters")) {
+
+						createOutputFolder();
+						writeOutputToFile();
+						System.out.println("COMMAND:"+command);
+						System.out.println("OUTPUT:"+output);
+			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            messageString=messageString.replace("\\\\", "\\");
+			            messageString=messageString.replace("\\\\\\", "\\");
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            System.out.println("messageString----:"+ messageString);
+						writer.println(messageString);
+			            System.out.println("messageString++++:"+ messageString);
+						destructStrings();
+						destructStrings2();
+					}
+					else if(jobType.equals("Different Input Files")) {
+				        createOutputFolder();
+						writeOutputToFile();
+						System.out.println("COMMAND:"+command);
+						System.out.println("OUTPUT:"+output);
+			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            messageString=messageString.replace("\\\\", "\\");
+			            messageString=messageString.replace("\\\\\\", "\\");
+			            messageString=messageString.replace("/", "\\");
+			            messageString=messageString.replace("//", "\\");
+			            System.out.println("messageString----:"+ messageString);
+						writer.println(messageString);
+			            System.out.println("messageString++++:"+ messageString);
+						destructStrings();
+						destructStrings2();
+				        
+						
+					}
+			        
+
+			        
+			        
+			        
+			        
+			        
+			        
+			        
+			        
+			     } 
+			     catch (IOException e) {
 			            e.printStackTrace();
 			     }
 			    }
 			});
 
 			a.start();
-			a.join(); //why?
-			p.waitFor(); //why?
 
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		} 
 		 catch (IOException e1) {
 			    if(osName.charAt(0)=='W') {
 			    	System.err.println(e1.getMessage());   
@@ -176,269 +338,168 @@ class ClientProgram{
 		        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 		        
 		        OutputStream outputStream = socket.getOutputStream();
-		        PrintWriter writer = new PrintWriter(outputStream, true);
+		        writer = new PrintWriter(outputStream, true);
  
 
 		        String text;
  
 		        while(true) {
-		        	 text = reader.readLine();
+		            	System.out.println("readLine:");
+
+		        	 	text = reader.readLine();
+			            System.out.println("DEXD:"+text);
+
 			            
-		        	 
-		        	 //Sample text request from Server for Archiver Job = "Manager-burhan|Job-teneme|Archiver|maindir1"
-		        	 //Sample text request from Server for Executable Job = "Manager-burhan|Job-ghhghj|Executable"
-		        	 //**System.out.println("TEXT:"+text);
-			            
-			            
-			            if(text.equals("bye")) {
-					        socket.close();
-			            	break;
+			            if(text.equals("SendInfo")) {
+				            System.out.println("TEXT:"+text);
+				
+				            
+							writer.println("cores:"+cores+"\n");
+
+
 			            }
-			            
-			            
-			            
-			            basePathclientManagerJobNameAndType = text.split("[|]");
-			            
-				   
-
-					    if(osName.charAt(0)=='W') {
-					    	//windows
-				            System.out.println("windows");
-				            baseStoragePath=basePathclientManagerJobNameAndType[0];
-					    }
-					    else {
-					    	//linux
-				            System.out.println("linux");
-					    	//baseStoragePath="/mnt/cloudStorage/";
-					    	baseStoragePath=basePathclientManagerJobNameAndType[0];
-					    	baseStoragePath=baseStoragePath.replace("\\", "//");
-
-					    }
-					    
-			            clientNum=basePathclientManagerJobNameAndType[1];
-			            managerName=basePathclientManagerJobNameAndType[2];
-			            jobName=basePathclientManagerJobNameAndType[3];
-			            jobType=basePathclientManagerJobNameAndType[4];
-
-			            System.out.println("Manager name:"+ managerName);
-
-			            System.out.println("Job name:"+ jobName);
-
-			            System.out.println("Job type:"+ jobType);
-
-						//default for all jobs
-				    	initClientPath();
-						initManagerPath();
-						initQueuePath();
-						initJobPath();
-						
-						
-						if(jobType.equals("Run Single Executable")) {
-							//specific for Executable job
-							initCommandFilePath();
-							initParametersList();			
-							initCommand();
-							initDoneJobPath();
-							runCommand(command);
-							
-							createOutputFolder();
-							writeOutputToFile();
-							
-							//--moveJobFromQueueToDoneFolder();
-
-							System.out.println("COMMAND:"+command);
-							System.out.println("OUTPUT:"+output);
-				            //writer.println("output:" + output);
-				            //System.out.println("Job name:"+ jobName);
-
-				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+			            else if(text.equals("bye")) {
+						        socket.close();
+				            	break;
+			            }
+			            else {
+			        	 	//Sample text request from Server for Archiver Job = "Manager-burhan|Job-teneme|Archiver|maindir1"
+			        	 	//Sample text request from Server for Executable Job = "Manager-burhan|Job-ghhghj|Executable"
+			        	 	//**System.out.println("TEXT:"+text);
 				            
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            messageString=messageString.replace("\\\\", "\\");
-				            messageString=messageString.replace("\\\\\\", "\\");
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-
-				            System.out.println("messageString----:"+ messageString);
-							writer.println(messageString);
-				            System.out.println("messageString++++:"+ messageString);
-						}
-						else if(jobType.equals("Make Archive")) {
-							//specific for Archiver job
-							
-							initFolderNameToMakeArchive();
-							initFolderPathToMakeArchive();
-							
-							System.out.println("FolderNameToMakeArchive:"+folderNameToMakeArchive);
-							System.out.println("FolderPathToMakeArchive:"+folderPathToMakeArchive);
-
-							initDoneJobPath();
-				            createOutputFolder();
-				            
-				            initOutputZipFile();
-
-				            zipTheFolder();
-				            
-				            moveJobFromQueueToDoneFolder();
+				 
 				            
 				            
-				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
+				            
+				            basePathclientManagerJobNameAndType = text.split("[|]");
+				            
+					   
 
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            messageString=messageString.replace("\\\\", "\\");
-				            messageString=messageString.replace("\\\\\\", "\\");
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            messageString = "\\"+messageString;
+						    if(osName.charAt(0)=='W') {
+						    	//windows
+					            System.out.println("windows");
+					            baseStoragePath=basePathclientManagerJobNameAndType[0];
+						    }
+						    else {
+						    	//linux
+					            System.out.println("linux");
+						    	//baseStoragePath="/mnt/cloudStorage/";
+						    	baseStoragePath=basePathclientManagerJobNameAndType[0];
+						    	baseStoragePath=baseStoragePath.replace("\\", "//");
 
+						    }
+						    
+				            clientNum=basePathclientManagerJobNameAndType[1];
+				            managerName=basePathclientManagerJobNameAndType[2];
+				            jobName=basePathclientManagerJobNameAndType[3];
+				            jobType=basePathclientManagerJobNameAndType[4];
 
-							writer.println(messageString);
+				            System.out.println("Manager name:"+ managerName);
+
+				            System.out.println("Job name:"+ jobName);
+
+				            System.out.println("Job type:"+ jobType);
+
+							//default for all jobs
+					    	initClientPath();
+							initManagerPath();
+							initQueuePath();
+							initJobPath();
 							
-
-							archiverFileList.clear();
 							
-
-						}
-						else if(jobType.equals("Run Executable With Different Parameters")) {
-							//specific for Archiver job
-
-
-							
-							
-							//initParametersList();	
-							String[] parametersArray = basePathclientManagerJobNameAndType[6].split(",");
-							parametersList=new ArrayList<String>();
-							for (int i = 0; i < parametersArray.length; i++) {
-
-								parametersList.add(parametersArray[i]);
+							if(jobType.equals("Run Single Executable")) {
+								//specific for Executable job
+								initCommandFilePath();
+								initParametersList();			
+								initCommand();
+								initDoneJobPath();
+								runCommand(command,jobType);
+								
+								
 							}
-							
-							
-							//initCommandFilePath();
-							command=basePathclientManagerJobNameAndType[5];
+							else if(jobType.equals("Make Archive")) {
+								
+								runCommand(command,jobType);
 
-							
-							//initCommand();
-							//initExecutableFileName();
-							executableFileName=basePathclientManagerJobNameAndType[7];
-							initExecutableFilePath();
-							command+=" ";
-							command+=executableFilePath;
-							
-							for(int k=0;k<parametersList.size();k++) {
-								command = command+ " "+parametersList.get(k);
 							}
-							
-							
-							
-							
-							
-							initDoneJobPath();
-							runCommand(command);
-							
-							createOutputFolder();
-							writeOutputToFile();
-							
-							moveJobFromQueueToDoneFolder();
+							else if(jobType.equals("Run Executable With Different Parameters")) {
+								//specific for Archiver job
 
-							System.out.println("COMMAND:"+command);
-							System.out.println("OUTPUT:"+output);
-				            //writer.println("output:" + output);
-				            //System.out.println("Job name:"+ jobName);
 
-				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
-				            
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            messageString=messageString.replace("\\\\", "\\");
-				            messageString=messageString.replace("\\\\\\", "\\");
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            
+								
+								
+								//initParametersList();	
+								String[] parametersArray = basePathclientManagerJobNameAndType[6].split(",");
+								parametersList=new ArrayList<String>();
+								for (int i = 0; i < parametersArray.length; i++) {
 
-							writer.println(messageString);
+									parametersList.add(parametersArray[i]);
+								}
+								
+								
+								//initCommandFilePath();
+								command=basePathclientManagerJobNameAndType[5];
 
+								
+								//initCommand();
+								//initExecutableFileName();
+								executableFileName=basePathclientManagerJobNameAndType[7];
+								initExecutableFilePath();
+								command+=" ";
+								command+=executableFilePath;
+								
+								for(int k=0;k<parametersList.size();k++) {
+									command = command+ " "+parametersList.get(k);
+								}
+								
+								
+								
+								
+								
+								initDoneJobPath();
+								runCommand(command,jobType);
 							
+								
 
-						}
-						else if(jobType.equals("Single Job")) {
-
-							//specific for Executable job
-							initPythonScriptFilePath();
-							initParametersList();
-							initPythonScriptCommand();
-							initDoneJobPath();
-							runCommand(command);
-							createOutputFolder();
-							writeOutputToFile();
-							System.out.println("COMMAND:"+command);
-							System.out.println("OUTPUT:"+output);
-				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            messageString=messageString.replace("\\\\", "\\");
-				            messageString=messageString.replace("\\\\\\", "\\");
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            System.out.println("messageString----:"+ messageString);
-							writer.println(messageString);
-				            System.out.println("messageString++++:"+ messageString);
-						}
-						else if(jobType.equals("Different Parameters")) {
-							System.out.println("differ param");
-							String[] parametersArray = basePathclientManagerJobNameAndType[5].split(",");
-							parametersList=new ArrayList<String>();
-							for (int i = 0; i < parametersArray.length; i++) {
-
-								parametersList.add(parametersArray[i]);
 							}
-							//specific for Executable job
-							initPythonScriptFilePath();
-							initPythonScriptCommand();
-							initDoneJobPath();
-							runCommand(command);
-							createOutputFolder();
-							writeOutputToFile();
-							System.out.println("COMMAND:"+command);
-							System.out.println("OUTPUT:"+output);
-				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            messageString=messageString.replace("\\\\", "\\");
-				            messageString=messageString.replace("\\\\\\", "\\");
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            System.out.println("messageString----:"+ messageString);
-							writer.println(messageString);
-				            System.out.println("messageString++++:"+ messageString);
-						}
-						else if(jobType.equals("Different Input Files")) {
-							System.out.println("differ inputs");
-							//specific for Executable job
-							initPythonScriptFilePath();
-							initParametersList();
-							initPythonScriptCommand();
-							initDoneJobPath();
-							runCommand(command);
-							createOutputFolder();
-							writeOutputToFile();
-							System.out.println("COMMAND:"+command);
-							System.out.println("OUTPUT:"+output);
-				            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            messageString=messageString.replace("\\\\", "\\");
-				            messageString=messageString.replace("\\\\\\", "\\");
-				            messageString=messageString.replace("/", "\\");
-				            messageString=messageString.replace("//", "\\");
-				            System.out.println("messageString----:"+ messageString);
-							writer.println(messageString);
-				            System.out.println("messageString++++:"+ messageString);
-						}
-						destructStrings();
-						destructStrings2();
+							else if(jobType.equals("Single Job")) {
+
+								//specific for Executable job
+								initPythonScriptFilePath();
+								initParametersList();
+								initPythonScriptCommand();
+								initDoneJobPath();
+								runCommand(command,jobType);
+								
+							}
+							else if(jobType.equals("Different Parameters")) {
+								System.out.println("differ param");
+								String[] parametersArray = basePathclientManagerJobNameAndType[5].split(",");
+								parametersList=new ArrayList<String>();
+								for (int i = 0; i < parametersArray.length; i++) {
+
+									parametersList.add(parametersArray[i]);
+								}
+								//specific for Executable job
+								initPythonScriptFilePath();
+								initPythonScriptCommand();
+								initDoneJobPath();
+								runCommand(command,jobType);
+								
+							}
+							else if(jobType.equals("Different Input Files")) {
+								System.out.println("differ inputs");
+								//specific for Executable job
+								initPythonScriptFilePath();
+								initParametersList();
+								initPythonScriptCommand();
+								initDoneJobPath();
+								runCommand(command,jobType);
+								
+							}
+				
+			            }
+
 		        }
 		    }
 		} catch (IOException ex) {
