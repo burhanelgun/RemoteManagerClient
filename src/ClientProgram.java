@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-class ClientProgram{
+public class ClientProgram extends Thread{
 	
     private static String clientPath = new String();
     
@@ -88,6 +88,16 @@ class ClientProgram{
     private static String outputZipFile;
 
     private static String[] basePathclientManagerJobNameAndType;
+	int port = Integer.parseInt("8888");
+	Socket socket;
+    
+    public ClientProgram(Socket sock) {
+   
+    	socket = sock;
+
+    }
+    
+    
     
     public static String runCommand2(String command ) {
     	Process p = null;
@@ -118,7 +128,7 @@ class ClientProgram{
     	return output;
     }
     
-    public static String runCommand(String command, String jobType) {
+    public static String runCommand(final String command, final String jobType) {
     	System.out.println("Command:"+command);
 		//And don't forget, if you are running in Windows, you need to put "cmd /c " in front of your command.
     	final Process p;
@@ -322,19 +332,20 @@ class ClientProgram{
 		return output.toString();
     	
     }
-    public static void main(String[] args) throws InterruptedException{
+  
+    public void run() {
 
-		int port = Integer.parseInt("8888");
  
-		try (ServerSocket serverSocket = new ServerSocket(port)) {
+		try{
  
-		    System.out.println("Server is listening on port " + port);
  
-		    while (true) {
-		        Socket socket = serverSocket.accept();
-		        System.out.println("New client connected");
+		
  
-		        InputStream input = socket.getInputStream();
+		        
+ 
+	        while(true) {
+	        	
+	        	InputStream input = socket.getInputStream();
 		        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 		        
 		        OutputStream outputStream = socket.getOutputStream();
@@ -342,171 +353,162 @@ class ClientProgram{
  
 
 		        String text;
- 
-		        while(true) {
-		            	System.out.println("readLine:");
+            	System.out.println("readLine:");
 
-		        	 	text = reader.readLine();
-			            System.out.println("DEXD:"+text);
+        	 	text = reader.readLine();
+	            System.out.println("DEXD:"+text);
 
-			            
-			            if(text.equals("SendInfo")) {
-				            System.out.println("TEXT:"+text);
-				
-				            
-							writer.println("cores:"+cores+"\n");
+	            
+	            if(text.equals("SendInfo")) {
+		            System.out.println("TEXT:"+text);
+		
+		            
+					writer.println("cores:"+cores+"\n");
 
 
-			            }
-			            else if(text.equals("bye")) {
-						        socket.close();
-				            	break;
-			            }
-			            else {
-			        	 	//Sample text request from Server for Archiver Job = "Manager-burhan|Job-teneme|Archiver|maindir1"
-			        	 	//Sample text request from Server for Executable Job = "Manager-burhan|Job-ghhghj|Executable"
-			        	 	//**System.out.println("TEXT:"+text);
-				            
-				 
-				            
-				            
-				            
-				            basePathclientManagerJobNameAndType = text.split("[|]");
-				            
-					   
+	            }
+	            else if(text.equals("bye")) {
+				        socket.close();
+		            	break;
+	            }
+	            else {
+		            		            
+		            basePathclientManagerJobNameAndType = text.split("[|]");
+		            
+				    if(osName.charAt(0)=='W') {
+				    	//windows
+			            System.out.println("windows");
+			            baseStoragePath=basePathclientManagerJobNameAndType[0];
+				    }
+				    else {
+				    	//linux
+			            System.out.println("linux");
+				    	//baseStoragePath="/mnt/cloudStorage/";
+				    	baseStoragePath=basePathclientManagerJobNameAndType[0];
+				    	baseStoragePath=baseStoragePath.replace("\\", "//");
 
-						    if(osName.charAt(0)=='W') {
-						    	//windows
-					            System.out.println("windows");
-					            baseStoragePath=basePathclientManagerJobNameAndType[0];
-						    }
-						    else {
-						    	//linux
-					            System.out.println("linux");
-						    	//baseStoragePath="/mnt/cloudStorage/";
-						    	baseStoragePath=basePathclientManagerJobNameAndType[0];
-						    	baseStoragePath=baseStoragePath.replace("\\", "//");
+				    }
+				    
+		            clientNum=basePathclientManagerJobNameAndType[1];
+		            managerName=basePathclientManagerJobNameAndType[2];
+		            jobName=basePathclientManagerJobNameAndType[3];
+		            jobType=basePathclientManagerJobNameAndType[4];
 
-						    }
-						    
-				            clientNum=basePathclientManagerJobNameAndType[1];
-				            managerName=basePathclientManagerJobNameAndType[2];
-				            jobName=basePathclientManagerJobNameAndType[3];
-				            jobType=basePathclientManagerJobNameAndType[4];
+		            System.out.println("Manager name:"+ managerName);
 
-				            System.out.println("Manager name:"+ managerName);
+		            System.out.println("Job name:"+ jobName);
 
-				            System.out.println("Job name:"+ jobName);
+		            System.out.println("Job type:"+ jobType);
 
-				            System.out.println("Job type:"+ jobType);
+					//default for all jobs
+			    	initClientPath();
+					initManagerPath();
+					initQueuePath();
+					initJobPath();
+					
+					
+					if(jobType.equals("Run Single Executable")) {
+						//specific for Executable job
+						initCommandFilePath();
+						initParametersList();			
+						initCommand();
+						initDoneJobPath();
+						runCommand(command,jobType);
+						
+						
+					}
+					else if(jobType.equals("Make Archive")) {
+						
+						runCommand(command,jobType);
 
-							//default for all jobs
-					    	initClientPath();
-							initManagerPath();
-							initQueuePath();
-							initJobPath();
-							
-							
-							if(jobType.equals("Run Single Executable")) {
-								//specific for Executable job
-								initCommandFilePath();
-								initParametersList();			
-								initCommand();
-								initDoneJobPath();
-								runCommand(command,jobType);
-								
-								
-							}
-							else if(jobType.equals("Make Archive")) {
-								
-								runCommand(command,jobType);
-
-							}
-							else if(jobType.equals("Run Executable With Different Parameters")) {
-								//specific for Archiver job
+					}
+					else if(jobType.equals("Run Executable With Different Parameters")) {
+						//specific for Archiver job
 
 
-								
-								
-								//initParametersList();	
-								String[] parametersArray = basePathclientManagerJobNameAndType[6].split(",");
-								parametersList=new ArrayList<String>();
-								for (int i = 0; i < parametersArray.length; i++) {
+						
+						
+						//initParametersList();	
+						String[] parametersArray = basePathclientManagerJobNameAndType[6].split(",");
+						parametersList=new ArrayList<String>();
+						for (int i = 0; i < parametersArray.length; i++) {
 
-									parametersList.add(parametersArray[i]);
-								}
-								
-								
-								//initCommandFilePath();
-								command=basePathclientManagerJobNameAndType[5];
+							parametersList.add(parametersArray[i]);
+						}
+						
+						
+						//initCommandFilePath();
+						command=basePathclientManagerJobNameAndType[5];
 
-								
-								//initCommand();
-								//initExecutableFileName();
-								executableFileName=basePathclientManagerJobNameAndType[7];
-								initExecutableFilePath();
-								command+=" ";
-								command+=executableFilePath;
-								
-								for(int k=0;k<parametersList.size();k++) {
-									command = command+ " "+parametersList.get(k);
-								}
-								
-								
-								
-								
-								
-								initDoneJobPath();
-								runCommand(command,jobType);
-							
-								
+						
+						//initCommand();
+						//initExecutableFileName();
+						executableFileName=basePathclientManagerJobNameAndType[7];
+						initExecutableFilePath();
+						command+=" ";
+						command+=executableFilePath;
+						
+						for(int k=0;k<parametersList.size();k++) {
+							command = command+ " "+parametersList.get(k);
+						}
+						
+						
+						
+						
+						
+						initDoneJobPath();
+						runCommand(command,jobType);
+					
+						
 
-							}
-							else if(jobType.equals("Single Job")) {
+					}
+					else if(jobType.equals("Single Job")) {
 
-								//specific for Executable job
-								initPythonScriptFilePath();
-								initParametersList();
-								initPythonScriptCommand();
-								initDoneJobPath();
-								runCommand(command,jobType);
-								
-							}
-							else if(jobType.equals("Different Parameters")) {
-								System.out.println("differ param");
-								String[] parametersArray = basePathclientManagerJobNameAndType[5].split(",");
-								parametersList=new ArrayList<String>();
-								for (int i = 0; i < parametersArray.length; i++) {
+						//specific for Executable job
+						initPythonScriptFilePath();
+						initParametersList();
+						initPythonScriptCommand();
+						initDoneJobPath();
+						runCommand(command,jobType);
+						
+					}
+					else if(jobType.equals("Different Parameters")) {
+						System.out.println("differ param");
+						String[] parametersArray = basePathclientManagerJobNameAndType[5].split(",");
+						parametersList=new ArrayList<String>();
+						for (int i = 0; i < parametersArray.length; i++) {
 
-									parametersList.add(parametersArray[i]);
-								}
-								//specific for Executable job
-								initPythonScriptFilePath();
-								initPythonScriptCommand();
-								initDoneJobPath();
-								runCommand(command,jobType);
-								
-							}
-							else if(jobType.equals("Different Input Files")) {
-								System.out.println("differ inputs");
-								//specific for Executable job
-								initPythonScriptFilePath();
-								initParametersList();
-								initPythonScriptCommand();
-								initDoneJobPath();
-								runCommand(command,jobType);
-								
-							}
-				
-			            }
+							parametersList.add(parametersArray[i]);
+						}
+						//specific for Executable job
+						initPythonScriptFilePath();
+						initPythonScriptCommand();
+						initDoneJobPath();
+						runCommand(command,jobType);
+						
+					}
+					else if(jobType.equals("Different Input Files")) {
+						System.out.println("differ inputs");
+						//specific for Executable job
+						initPythonScriptFilePath();
+						initParametersList();
+						initPythonScriptCommand();
+						initDoneJobPath();
+						runCommand(command,jobType);
+						
+					}
+		
+	            }
 
-		        }
-		    }
+	        }
+		    
 		} catch (IOException ex) {
 		    System.out.println("Server exception: " + ex.getMessage());
 		    ex.printStackTrace();
 		}
     }
+    
+    
     
 	private static void initPythonScriptCommand() throws IOException {
     	firstCommand="python";
