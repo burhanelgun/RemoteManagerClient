@@ -151,8 +151,6 @@ public class ClientProgram extends Thread{
 	
 						createOutputFolder();
 						writeOutputToFile();
-						System.out.println("COMMAND:"+command);
-						System.out.println("OUTPUT:"+output);
 			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
 			            messageString=messageString.replace("/", "\\");
 			            messageString=messageString.replace("//", "\\");
@@ -160,9 +158,8 @@ public class ClientProgram extends Thread{
 			            messageString=messageString.replace("\\\\\\", "\\");
 			            messageString=messageString.replace("/", "\\");
 			            messageString=messageString.replace("//", "\\");
-			            System.out.println("messageString----:"+ messageString);
 						writer.println(messageString);
-			            System.out.println("messageString++++:"+ messageString);
+			            System.out.println("Sent Message:"+ messageString);
 						destructStrings();
 						destructStrings2();
 					}
@@ -170,8 +167,6 @@ public class ClientProgram extends Thread{
 
 						createOutputFolder();
 						writeOutputToFile();
-						System.out.println("COMMAND:"+command);
-						System.out.println("OUTPUT:"+output);
 			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
 			            messageString=messageString.replace("/", "\\");
 			            messageString=messageString.replace("//", "\\");
@@ -179,17 +174,14 @@ public class ClientProgram extends Thread{
 			            messageString=messageString.replace("\\\\\\", "\\");
 			            messageString=messageString.replace("/", "\\");
 			            messageString=messageString.replace("//", "\\");
-			            System.out.println("messageString----:"+ messageString);
 						writer.println(messageString);
-			            System.out.println("messageString++++:"+ messageString);
+			            System.out.println("Sent Message:"+ messageString);
 						destructStrings();
 						destructStrings2();
 					}
 					else if(jobType.equals("Different Input Files")) {
 				        createOutputFolder();
 						writeOutputToFile();
-						System.out.println("COMMAND:"+command);
-						System.out.println("OUTPUT:"+output);
 			            String messageString = doneJobPath+"*"+jobName+"*"+managerName;
 			            messageString=messageString.replace("/", "\\");
 			            messageString=messageString.replace("//", "\\");
@@ -197,9 +189,8 @@ public class ClientProgram extends Thread{
 			            messageString=messageString.replace("\\\\\\", "\\");
 			            messageString=messageString.replace("/", "\\");
 			            messageString=messageString.replace("//", "\\");
-			            System.out.println("messageString----:"+ messageString);
 						writer.println(messageString);
-			            System.out.println("messageString++++:"+ messageString);
+			            System.out.println("Sent Message:"+ messageString);
 						destructStrings();
 						destructStrings2();
 				        
@@ -259,14 +250,12 @@ public class ClientProgram extends Thread{
  
 
 		        String text;
-            	System.out.println("readLine:");
 
         	 	text = reader.readLine();
-	            System.out.println("DEXD:"+text);
+	            System.out.println("Received Message:"+text);
 
 	            
 	            if(text.equals("SendInfo")) {
-		            System.out.println("TEXT:"+text);
 		
 		            
 					writer.println("cores:"+cores+"\n");
@@ -289,7 +278,6 @@ public class ClientProgram extends Thread{
 				    else {
 				    	//linux
 			            System.out.println("linux");
-				    	//baseStoragePath="/mnt/cloudStorage/";
 				    	baseStoragePath=basePathclientManagerJobNameAndType[0];
 				    	baseStoragePath=baseStoragePath.replace("\\", "//");
 
@@ -324,7 +312,6 @@ public class ClientProgram extends Thread{
 						
 					}
 					else if(jobType.equals("Different Parameters")) {
-						System.out.println("differ param");
 						String[] parametersArray = basePathclientManagerJobNameAndType[5].split(",");
 						parametersList=new ArrayList<String>();
 						for (int i = 0; i < parametersArray.length; i++) {
@@ -339,7 +326,6 @@ public class ClientProgram extends Thread{
 						
 					}
 					else if(jobType.equals("Different Input Files")) {
-						System.out.println("differ inputs");
 						//specific for Executable job
 						initPythonScriptFilePath();
 						initParametersList();
@@ -415,11 +401,9 @@ public class ClientProgram extends Thread{
 		out.close();
 	}
 	private static void initJobList() {
-		//**System.out.println("queuePathFolder:"+queuePathFolder);
    		jobList = new ArrayList<File>(Arrays.asList(queuePathFolder.listFiles()));		
 	}
 	private static void initManagerList() {
-		//**System.out.println("clientPathFolder:"+clientPathFolder);
 		managerList = new ArrayList<File>(Arrays.asList(clientPathFolder.listFiles()));		
 	}
 	private static void initClientPath() {

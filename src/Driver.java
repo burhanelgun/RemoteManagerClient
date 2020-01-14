@@ -8,13 +8,12 @@ public class Driver {
 		
 		try {
 			ServerSocket serverSocket = new ServerSocket(8888);
-			System.out.println("1111");
 		    while (true) {
-				System.out.println("2222");
+				System.out.println("Listening the socket on port 8888...");
 	            Socket socket = serverSocket.accept();
-				System.out.println("3333");
+				System.out.println("New client connected...");
+
 	            ClientProgram h = new ClientProgram(socket);
-				System.out.println("4444");
 	            h.start();
 	        }
 		} catch (IOException e) {
